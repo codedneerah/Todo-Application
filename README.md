@@ -59,13 +59,22 @@ Responsive Todo application built with React 19, showcasing advanced frontend en
 - Vite: Fast build tool with HMR and optimized production builds
 - Axios: Reliable HTTP client with interceptors and error handling
 
-## GIFs of Key Features
+## Screenshot of Key Features
 
-- Todo List with Pagination: [Add GIF showing todo list with pagination controls]
-- Search and Filtering: [Add GIF demonstrating search and filter functionality]
-- CRUD Operations: [Add GIF showing create, edit, and delete operations]
-- Authentication Flow: [Add GIF of login/register process]
-- Real-time Updates: [Add GIF showing live task synchronization]
+### Todo List View
+![Todo List](screenshots/Todo%20list.png)
+*Main todo list with pagination, search, and filtering functionality*
+
+### Todo Details Page
+![Todo Details](screenshots/todo%20details.png)
+*Individual todo details with full information and navigation back to list*
+
+### 404 Error Page
+![404 Page](screenshots/todo%20404%20page.png)
+*Custom 404 page for undefined routes with navigation options*
+
+
+
 
 ## Known Issues and Future Improvements
 
