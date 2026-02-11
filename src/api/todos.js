@@ -221,7 +221,7 @@ export const connectWebSocket = (onMessage) => {
   }
 
   try {
-    const ws = new WebSocket('ws://api.oluwasetemi.dev/ws/tasks');
+    const ws = new WebSocket('wss://api.oluwasetemi.dev/ws/tasks');
 
     ws.onopen = () => {
       console.log('WebSocket connected');
