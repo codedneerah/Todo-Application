@@ -1,6 +1,6 @@
 # Todo Application
 
-Responsive Todo application built with React 19, showcasing advanced frontend engineering skills including API integration, routing, error handling, and accessibility.
+This is a modern, responsive Todo Application built with React (and related frontend technologies) designed to help users efficiently manage daily tasks. The application focuses on clean UI, intuitive state management, and scalable component architecture.
 
 ## Features
 
