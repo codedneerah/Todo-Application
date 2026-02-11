@@ -91,3 +91,25 @@ Responsive Todo application built with React 19, showcasing advanced frontend en
 - Categories and tags for todos
 - Export/import functionality
 - Mobile app version
+- Due dates and reminders with notifications
+- Priority levels (High, Medium, Low) with visual indicators
+- Recurring todos and templates
+- Collaboration features (shared lists, permissions)
+- Analytics dashboard (productivity stats, completion rates)
+- Voice input for quick todo creation
+- Integration with calendar apps (Google Calendar, Outlook)
+- Bulk actions (mark multiple as complete, delete, move)
+- Undo/redo functionality for actions
+- Custom themes and color schemes
+- Advanced search with multiple filters (date range, priority, category)
+- Todo history and activity log
+- Backup and cloud sync across devices
+- Keyboard shortcuts for power users
+- Progressive Web App enhancements (installable, push notifications)
+- Integration with external services (Slack, Trello, etc.)
+- Todo sharing via links with view/edit permissions
+- Time tracking for tasks
+- Subtasks and nested todo items
+- File attachments for todos
+- Custom fields and metadata
+- API for third-party integrations

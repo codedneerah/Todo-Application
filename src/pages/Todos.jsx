@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getTodos, deleteTodo, getUserTodos } from "../api/todos";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CreateTodo from "../components/CreateTodo";
 import EditTodo from "../components/EditTodo";
 import Loader from "../components/ui/Loader";
@@ -31,10 +31,7 @@ export default function Todos() {
     queryFn: () => isAuthenticated ? getUserTodos({ page, search, status, category, priority }) : getTodos({ page, search, status, category, priority }),
   });
 
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [search, status, category, priority]);
+
 
   if (isLoading) return <Loader />;
   if (error) return (
