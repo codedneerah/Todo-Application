@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Notifications from '../Notifications';
+import { FaHome, FaUser, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
 
 export default function Navbar() {
   const { user, signOut, isAuthenticated } = useAuth();
@@ -16,54 +17,95 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold text-gray-900">
-              Todo App
-            </Link>
-          </div>
+    <>
+      {/* Skip to main content link for keyboard users */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
 
-          <div className="flex items-center space-x-4">
-            {isAuthenticated && <Notifications />}
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/profile"
-                  className="text-sm text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100"
-                >
-                  Profile
-                </Link>
-                <span className="text-sm text-gray-700">
-                  Welcome, {user?.name || user?.email}
-                </span>
-                <button
-                  onClick={handleSignOut}
-                  className="text-sm text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="text-sm text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/register"
-                  className="text-sm bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
+      <nav
+        className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50"
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo/Brand */}
+            <div className="flex items-center">
+              <Link
+                to="/"
+                className="flex items-center gap-2 text-xl font-bold text-gray-900 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2"
+                aria-label="TodoApp Home"
+              >
+                <span aria-hidden="true">📝</span>
+                <span>TodoApp</span>
+              </Link>
+            </div>
+
+            {/* Navigation Items - Right Side */}
+            <div className="flex items-center gap-6">
+              {isAuthenticated && (
+                <>
+                  {/* Notifications */}
+                  <Notifications />
+
+                  {/* Profile Link */}
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-1 text-sm text-gray-700 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+                    aria-label="View your profile"
+                  >
+                    <FaUser size={16} aria-hidden="true" />
+                    <span className="hidden sm:inline">Profile</span>
+                  </Link>
+
+                  {/* User Info */}
+                  <div
+                    className="hidden md:block text-sm text-gray-700 font-medium"
+                    aria-live="polite"
+                  >
+                    Welcome, <span className="text-primary-600">{user?.name || user?.email || 'Guest'}</span>
+                  </div>
+
+                  {/* Sign Out Button */}
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-1 text-sm text-gray-700 hover:text-danger-600 focus:outline-none focus:ring-2 focus:ring-danger-500 focus:ring-offset-2 rounded px-3 py-2 transition-colors bg-gray-50 hover:bg-gray-100"
+                    aria-label="Sign out of your account"
+                  >
+                    <FaSignOutAlt size={16} aria-hidden="true" />
+                    <span className="hidden sm:inline">Sign Out</span>
+                  </button>
+                </>
+              )}
+
+              {!isAuthenticated && (
+                <>
+                  {/* Sign In Link */}
+                  <Link
+                    to="/login"
+                    className="flex items-center gap-1 text-sm text-gray-700 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded px-3 py-2 transition-colors"
+                    aria-label="Sign in to your account"
+                  >
+                    <FaSignInAlt size={16} aria-hidden="true" />
+                    <span className="hidden sm:inline">Sign In</span>
+                  </Link>
+
+                  {/* Sign Up Button */}
+                  <Link
+                    to="/register"
+                    className="flex items-center gap-1 text-sm bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 transition-colors font-medium"
+                    aria-label="Create a new account"
+                  >
+                    <span aria-hidden="true">+</span>
+                    <span className="hidden sm:inline">Sign Up</span>
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { login, register, logout, getCurrentUser } from '../api/todos';
+import { login, register, logout, getCurrentUser, connectWebSocket, disconnectWebSocket } from '../api/todos';
 
 const AuthContext = createContext();
 
@@ -24,14 +24,13 @@ export const AuthProvider = ({ children }) => {
         const storedToken = localStorage.getItem('authToken');
 
         if (storedUser && storedToken) {
-          setUser(JSON.parse(storedUser));
-        } else {
-          // Try to get current user from API if token exists
-          const userData = await getCurrentUser();
-          setUser(userData);
-          localStorage.setItem('user', JSON.stringify(userData));
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          // Connect to WebSocket on app start if user exists
+          connectWebSocket(handleWebSocketMessage);
         }
-      } catch {
+      } catch (error) {
+        console.error('Auth check error:', error);
         // User not authenticated, clear any stale data
         localStorage.removeItem('user');
         localStorage.removeItem('authToken');
@@ -41,61 +40,103 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
+
+    return () => {
+      disconnectWebSocket();
+    };
   }, []);
 
+  const handleWebSocketMessage = (data) => {
+    console.log('📨 Received WebSocket message:', data);
+    // Handle real-time updates here
+    // Invalidate queries or update state as needed
+  };
+
   const signIn = async (credentials) => {
-    const response = await login(credentials);
-    setUser(response.user);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    localStorage.setItem('authToken', response.token);
+    try {
+      const response = await login(credentials);
+      const userData = response.user || response.data?.user || response;
+      const token = response.token || response.data?.token;
 
-    // Show login notification
-    setLoginNotification({
-      type: 'success',
-      message: `Welcome back, ${response.user.name || response.user.email}!`,
-      timestamp: Date.now(),
-    });
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('authToken', token);
 
-    // Clear notification after 5 seconds
-    setTimeout(() => setLoginNotification(null), 5000);
+      // Connect WebSocket after login
+      connectWebSocket(handleWebSocketMessage);
 
-    return response;
+      // Show login notification
+      setLoginNotification({
+        type: 'success',
+        message: `Welcome back, ${userData.name || userData.email}!`,
+        timestamp: Date.now(),
+      });
+
+      // Clear notification after 5 seconds
+      setTimeout(() => setLoginNotification(null), 5000);
+
+      return response;
+    } catch (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    }
   };
 
   const signUp = async (userData) => {
-    const response = await register(userData);
-    setUser(response.user);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    localStorage.setItem('authToken', response.token);
+    try {
+      const response = await register(userData);
+      const user = response.user || response.data?.user || response;
+      const token = response.token || response.data?.token;
 
-    // Show signup notification
-    setLoginNotification({
-      type: 'success',
-      message: `Welcome to Todo App, ${response.user.name || response.user.email}!`,
-      timestamp: Date.now(),
-    });
+      setUser(user);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('authToken', token);
 
-    // Clear notification after 5 seconds
-    setTimeout(() => setLoginNotification(null), 5000);
+      // Connect WebSocket after signup
+      connectWebSocket(handleWebSocketMessage);
 
-    return response;
+      // Show signup notification
+      setLoginNotification({
+        type: 'success',
+        message: `Welcome to Todo App, ${user.name || user.email}!`,
+        timestamp: Date.now(),
+      });
+
+      // Clear notification after 5 seconds
+      setTimeout(() => setLoginNotification(null), 5000);
+
+      return response;
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
-    await logout();
-    setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('authToken');
+    try {
+      await logout();
+      setUser(null);
+      localStorage.removeItem('user');
+      localStorage.removeItem('authToken');
+      disconnectWebSocket();
 
-    // Show logout notification
-    setLoginNotification({
-      type: 'info',
-      message: 'You have been logged out successfully.',
-      timestamp: Date.now(),
-    });
+      // Show logout notification
+      setLoginNotification({
+        type: 'info',
+        message: 'You have been logged out successfully.',
+        timestamp: Date.now(),
+      });
 
-    // Clear notification after 3 seconds
-    setTimeout(() => setLoginNotification(null), 3000);
+      // Clear notification after 3 seconds
+      setTimeout(() => setLoginNotification(null), 3000);
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Still clear local data even if logout fails
+      setUser(null);
+      localStorage.removeItem('user');
+      localStorage.removeItem('authToken');
+      disconnectWebSocket();
+    }
   };
 
   const value = {

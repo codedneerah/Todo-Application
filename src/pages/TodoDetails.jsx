@@ -1,13 +1,15 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getTodoById, updateTodo, deleteTodo } from "../api/todos";
+import { getTodoById, updateTodo, deleteTodo, getTodos } from "../api/todos";
 import { useState } from "react";
 import Loader from "../components/ui/Loader";
-import { FaArrowLeft, FaEdit, FaTrash, FaCheck, FaClock, FaCalendar, FaTag, FaFlag } from "react-icons/fa";
+import SEOMeta from "../components/SEOMeta";
+import { FaArrowLeft, FaEdit, FaTrash, FaCheck, FaClock, FaCalendar, FaTag, FaFlag, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function TodoDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const queryClient = useQueryClient();
@@ -16,6 +18,12 @@ export default function TodoDetails() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["todo", id],
     queryFn: () => getTodoById(id),
+  });
+
+  // Fetch all todos to enable next/previous navigation
+  const { data: allTodosData } = useQuery({
+    queryKey: ["todos", "all"],
+    queryFn: () => getTodos({ page: 1, search: '', status: '', category: '', priority: '' }),
   });
 
   const updateMutation = useMutation({
@@ -32,9 +40,14 @@ export default function TodoDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
       // Navigate back to list after deletion
-      window.location.href = "/";
+      navigate("/");
     },
   });
+
+  // Get next and previous todos
+  const currentTodoIndex = allTodosData?.data?.findIndex(t => String(t.id) === String(id)) ?? -1;
+  const previousTodo = currentTodoIndex > 0 ? allTodosData?.data?.[currentTodoIndex - 1] : null;
+  const nextTodo = currentTodoIndex < (allTodosData?.data?.length - 1) ? allTodosData?.data?.[currentTodoIndex + 1] : null;
 
   if (isLoading) return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -50,7 +63,7 @@ export default function TodoDetails() {
         <p className="text-gray-600 mb-6">The todo you're looking for doesn't exist or has been deleted.</p>
         <Link
           to="/"
-          className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
         >
           <FaArrowLeft className="mr-2" />
           Back to Todos
@@ -100,17 +113,52 @@ export default function TodoDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <>
+      <SEOMeta
+        title={`${data.title || 'Todo'} - TodoApp`}
+        description={data.description ? data.description.substring(0, 150) : `View details for ${data.title || 'this todo'}`}
+        keywords={`todo, task, ${data.category || 'tasks'}, ${data.priority || 'priority'}`}
+        ogTitle={data.title}
+        ogDescription={data.description || `A task in TodoApp - ${data.category ? `Category: ${data.category}` : ''}`}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <main className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
+        {/* Navigation Header */}
+        <div className="mb-8 flex items-center justify-between">
           <Link
             to="/"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-4"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors font-medium"
           >
             <FaArrowLeft className="mr-2" />
             Back to Todos
           </Link>
+          
+          {/* Next/Previous Buttons */}
+          <div className="flex gap-2">
+            {previousTodo && (
+              <Link
+                to={`/todos/${previousTodo.id}`}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                title={`Previous: ${previousTodo.title}`}
+              >
+                <FaChevronLeft className="mr-2" />
+                Previous
+              </Link>
+            )}
+            {nextTodo && (
+              <Link
+                to={`/todos/${nextTodo.id}`}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                title={`Next: ${nextTodo.title}`}
+              >
+                Next
+                <FaChevronRight className="ml-2" />
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Main Content */}
 
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -197,9 +245,6 @@ export default function TodoDetails() {
               </div>
             )}
           </div>
-        </div>
-
-        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Description Section */}
           <div className="lg:col-span-2">
@@ -335,6 +380,7 @@ export default function TodoDetails() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </>
   );
 }

@@ -111,5 +111,4 @@ This is a modern, responsive Todo Application built with React (and related fron
 - Time tracking for tasks
 - Subtasks and nested todo items
 - File attachments for todos
-- Custom fields and metadata
-- API for third-party integrations
+

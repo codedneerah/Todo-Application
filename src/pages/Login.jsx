@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import { FaEnvelope, FaLock, FaSignInAlt, FaUserPlus, FaEye, FaEyeSlash } from 'react-icons/fa';
+import SEOMeta from '../components/SEOMeta';
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -31,7 +32,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <>
+      <SEOMeta
+        title="Sign In"
+        description="Sign in to your TodoApp account to manage your tasks efficiently. Access your personalized task management dashboard."
+        keywords="login, sign in, task management, todo app"
+        ogTitle="Sign In - TodoApp"
+        ogDescription="Access your TodoApp account to manage tasks"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
@@ -177,6 +186,7 @@ export default function Login() {
           </p>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import SEOMeta from '../components/SEOMeta';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -38,22 +39,37 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please sign in</h2>
-          <Link
-            to="/login"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Sign In
-          </Link>
+      <>
+        <SEOMeta
+          title="Profile"
+          description="Manage your TodoApp profile and account settings."
+          ogTitle="Profile - TodoApp"
+          ogDescription="Manage your account settings"
+        />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Please sign in</h2>
+            <Link
+              to="/login"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <SEOMeta
+        title="Profile"
+        description="Manage your TodoApp profile and account settings."
+        ogTitle="Profile - TodoApp"
+        ogDescription="Manage your account settings"
+      />
+      <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">User Profile</h1>
@@ -179,6 +195,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
