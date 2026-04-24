@@ -13,5 +13,4 @@
 9. Lint: `npm run lint` 
 10. Complete! 
 
-All JavaScript files have been successfully converted to TypeScript with strict typing enabled.
 
